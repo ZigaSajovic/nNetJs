@@ -30,16 +30,16 @@ We construct and a 5-layers deep neural network, outputing a numeric value, and 
     //train for 1000 steps
     for(var k=0;k<1000;k++) n.trainStep({data:data,cost:cost,stepSize:0.1});
     //evaluate on all 5 cases
-    var classification=[];
+    var prediction=[];
     for(k in input){
-        classification[k]=n.eval(input[k]);
-        forAll(classification[k],function(x){return x.toFixed(2)});
+        prediction[k]=n.eval(input[k]);
+        forAll(prediction[k],function(x){return x.toFixed(2)});
     }
     //display results
     console.log("Correct predictions");
     console.log(output);
     console.log("\nPredictions:");
-    console.log(classification);
+    console.log(prediction);
 ```
 
 ###Example 2
