@@ -25,10 +25,8 @@ We construct a 5-layers deep neural network, outputing a 3-vector, and train it 
     n.add({shape:[10,3],type:"fc",activation:"id"});
     //initialize neurons (uses variance normalization by layer length)
     n.init(gaussian(0, 1));
-    //define cost function
-    var cost="meanSquare";
     //train for 1000 steps
-    for(var k=0;k<1000;k++) n.trainStep({data:data,cost:cost,stepSize:0.1});
+    for(var k=0;k<1000;k++) n.trainStep({data:data,cost:"meanSquare",stepSize:0.1});
     //evaluate on all 5 cases
     var prediction=[];
     for(k in input){
@@ -64,10 +62,8 @@ We construct a 5-layers deep neural network, outputing classification probabilit
     n.add({shape:[10,3],type:"fc",activation:"sigmoid"});
     //initialize neurons (uses variance normalization by layer length)
     n.init(gaussian(0, 1));
-    //define cost function
-    var cost="entropyBinary";
     //train for 1000 steps
-    for(var k=0;k<1000;k++) n.trainStep({data:data,cost:cost,stepSize:0.1});
+    for(var k=0;k<1000;k++) n.trainStep({data:data,cost:"entropyBinary",stepSize:0.1});
     //evaluate on all data
     var classification=[];
     for(k in input){
