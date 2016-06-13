@@ -5,7 +5,7 @@ Written for general use in web-based aplications.
 
 ###Example 1
 
-We construct a 5-layers deep neural network, outputing a 3-vector, and train it for a 1000 steps.
+We construct a 5-layers deep neural network, outputing a numeric 3-vector, and train it for a 1000 steps.
 
 ```javascript
 //generate Random data for demo
@@ -42,7 +42,7 @@ console.log(prediction);
 
 ###Example 2
 
-We construct a 5-layers deep neural network, outputing classification probability, and train it for a 1000 steps.
+We construct a 5-layers deep neural network, outputing a 3-class classification probability, and train it for a 1000 steps.
 
 ```javascript
 //generate Random data for demo
