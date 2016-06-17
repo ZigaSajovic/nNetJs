@@ -3,7 +3,7 @@
  */
 
 
-var fun={
+var activations={
     id:{
         f:function(x){
             return x;
@@ -84,23 +84,64 @@ var fun={
     }
 };
 
+var costs={
+    meanSquare:{
+        f:function(x,y){
+            var sum=0;
+            for(i in x){
+                sum+=(x[i]-y[i])*(x[i]-y[i])/x.length;
+            }
+            return sum;
+        },
+        df:function(x,y){
+            var out=[];
+            for(i in x)out[i]=2*(x[i]-y[i])/x.length;
+            return out;
+        }
+    },
+    entropyBinary:{
+        f:function(x,y){
+            var sum=0;
+            for(i in x)sum-=(y[i]*Math.log(x[i])+(1-y[i])*Math.log(1-x[i]))/x.length;
+            return sum;
+        },
+        df:function(x,y){
+            var out=[];
+            for(i in x)out[i]=-(y[i]/x[i] - (1-y[i])/(1-x[i]) )/x.length;
+            return out;
+        }
+    },
+    entropy:{
+        f:function(x,y){
+            var sum=0;
+            for(i in x)sum-=(y[i]*Math.log(x[i]))/x.length;
+            return sum;
+        },
+        df:function(x,y){
+            var out=[];
+            for(i in x)out[i]=-(y[i]/x[i])/x.length;
+            return out;
+        }
+    }
+};
+
 var layers={
     fc:{
         eval:function(layer,result){
             result.result = matMulLayer(result.result, layer);
-            forAll(result.result, fun[layer.activation].f);
+            forAll(result.result, activations[layer.activation].f);
         },
         evalForGrad:function(layer,lastOut){
             var matMul=matMulLayer(lastOut,layer);
             var output;
-            forAllCopy(output=[],matMul,fun[layer.activation].f);
+            forAllCopy(output=[],matMul,activations[layer.activation].f);
             return{
                 matMul:matMul,
                 output:output
             }
         },
         grad:function(layer,result,resultLast,grad){
-            forAll(result.matMul,fun[layer.activation].df);
+            forAll(result.matMul,activations[layer.activation].df);
             ocProd(grad.grad,result.matMul);
             var db=[];
             forAllCopy(db,grad.grad,function(x){return x;});
@@ -179,7 +220,7 @@ function initializeWeights(shape,distribution){
     for(var i=0;i<shape[1];i++){
         var tmp=[];
         for(var j=0;j<shape[0];j++){
-            tmp[j]=distribution()/Math.sqrt(shape[0]);
+            tmp[j]=distribution()/Math.sqrt(shape[1]);
         }
         out2[i]=0;
         out[i]=tmp;
@@ -204,7 +245,7 @@ function gradients(cost, data){
         results[i]=layers[this.layers[i].type].evalForGrad(this.layers[i],results[i-1].output);
         k++;
     }
-    var grad={grad:fun[cost].df(results[k-1].output,data.out)};
+    var grad={grad:costs[cost].df(results[k-1].output,data.out)};
     var grads=[];
     for(var i=this.layers.length-1;i>0;i--){
         grads[i]=layers[this.layers[i].type].grad(this.layers[i],results[i],results[i-1],grad);
@@ -232,7 +273,7 @@ function gradientsBatch(details){
 
     var grad=[];
     var grads=[];
-    for(i in batch)grad[i]={grad:fun[details.cost].df(batch[i][ks[i]-1].output,details.data.out[i])};
+    for(i in batch)grad[i]={grad:costs[details.cost].df(batch[i][ks[i]-1].output,details.data.out[i])};
 
     for(var i=this.layers.length-1;i>0;i--){
         grads[i]=[];
@@ -260,7 +301,7 @@ function trainStepBatch(details){
     }
 
     var grad=[];
-    for(i in batch)grad[i]={grad:fun[details.cost].df(batch[i][ks[i]-1].output,details.data.out[i])};
+    for(i in batch)grad[i]={grad:costs[details.cost].df(batch[i][ks[i]-1].output,details.data.out[i])};
 
     for(var i=this.layers.length-1;i>0;i--){
         var grads=[];
@@ -355,12 +396,12 @@ function checkBatchGradient(cost){
     console.log(g[1]);
     var s=n.eval(t);
 
-    var H=fun[cost].f(s,d);
+    var H=costs[cost].f(s,d);
     console.log("\n\n"+H);
     n.layers[1].par.b[1]=5.0000001;
     var r=n.eval(t);
 
-    var T=fun[cost].f(r,d);
+    var T=costs[cost].f(r,d);
     console.log("\n\n"+T);
     var e=(T-H)/0.0000001;
     console.log("numeric");
@@ -458,8 +499,8 @@ function normalize(mat){
 
 function example1(){
     /*
-    Example shows training of a neural net outputting a numeric value
-    Final layer is linear, as indicated by "id" activation function
+     Example shows training of a neural net outputting a numeric value
+     Final layer is linear, as indicated by "id" activation function
      */
     //generate Random data for demo
     //input -> 5 x 50 matrix, 1x50 is one case
