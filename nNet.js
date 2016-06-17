@@ -43,44 +43,6 @@ var activations={
         df:function(x){
             return (1/(1+Math.exp(-x)))*(1-1/(1+Math.exp(-x)));
         }
-    },
-    meanSquare:{
-        f:function(x,y){
-            var sum=0;
-            for(i in x){
-                sum+=(x[i]-y[i])*(x[i]-y[i])/x.length;
-            }
-            return sum;
-        },
-        df:function(x,y){
-            var out=[];
-            for(i in x)out[i]=2*(x[i]-y[i])/x.length;
-            return out;
-        }
-    },
-    entropyBinary:{
-        f:function(x,y){
-            var sum=0;
-            for(i in x)sum-=(y[i]*Math.log(x[i])+(1-y[i])*Math.log(1-x[i]))/x.length;
-            return sum;
-        },
-        df:function(x,y){
-            var out=[];
-            for(i in x)out[i]=-(y[i]/x[i] - (1-y[i])/(1-x[i]) )/x.length;
-            return out;
-        }
-    },
-    entropy:{
-        f:function(x,y){
-            var sum=0;
-            for(i in x)sum-=(y[i]*Math.log(x[i]))/x.length;
-            return sum;
-        },
-        df:function(x,y){
-            var out=[];
-            for(i in x)out[i]=-(y[i]/x[i])/x.length;
-            return out;
-        }
     }
 };
 
@@ -572,4 +534,4 @@ function example2(){
 }
 
 //example1();
-//example2();
+example2();
