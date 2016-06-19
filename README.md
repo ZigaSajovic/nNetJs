@@ -3,6 +3,8 @@ Neural Networks for javaScript; a self-contained library
 
 Written for general use in web-based aplications.
 
+This is the openSource version.
+
 ###Example 1
 
 We construct a 5-layers deep neural network, outputing a numeric 3-vector, and train it for a 1000 steps.
